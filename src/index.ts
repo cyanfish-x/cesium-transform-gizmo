@@ -683,7 +683,9 @@ export class TransformGizmo {
       const fanPositions: number[] = []
       const fanIndices: number[] = []
 
-      // 圆心 (0,0,0)+e to avoid race condition
+      // 圆心不能用精确 (0,0,0)：Cesium 在 scene3DOnly=false 时会对实例顶点做
+      // projectTo2D，地心原点无法投影，会抛 DeveloperError 并中断渲染。
+      // Primitive.modelMatrix 是每帧 GPU 变换，救不了这次投影。
       fanPositions.push(1e-10, 1e-10, 1e-10)
       // 添加圆弧点
       arcPoints.forEach((p) => fanPositions.push(p.x, p.y, p.z))
@@ -705,7 +707,7 @@ export class TransformGizmo {
         indices: new Uint16Array(fanIndices),
         primitiveType: Cesium.PrimitiveType.TRIANGLES,
         boundingSphere: new Cesium.BoundingSphere(
-          new Cesium.Cartesian3(1e-10, 1e-10, 1e-10), // avoid race condition
+          new Cesium.Cartesian3(1e-10, 1e-10, 1e-10),
           radius
         ),
       })
