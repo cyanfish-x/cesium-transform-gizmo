@@ -683,8 +683,8 @@ export class TransformGizmo {
       const fanPositions: number[] = []
       const fanIndices: number[] = []
 
-      // 圆心 (0,0,0)
-      fanPositions.push(0, 0, 0)
+      // 圆心 (0,0,0)+e to avoid race condition
+      fanPositions.push(1e-10, 1e-10, 1e-10)
       // 添加圆弧点
       arcPoints.forEach((p) => fanPositions.push(p.x, p.y, p.z))
 
@@ -705,7 +705,7 @@ export class TransformGizmo {
         indices: new Uint16Array(fanIndices),
         primitiveType: Cesium.PrimitiveType.TRIANGLES,
         boundingSphere: new Cesium.BoundingSphere(
-          Cesium.Cartesian3.ZERO,
+          new Cesium.Cartesian3(1e-10, 1e-10, 1e-10), // avoid race condition
           radius
         ),
       })
